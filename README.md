@@ -1,128 +1,150 @@
+
 #  Fraud Detection Project
 
-This project is developed as part of the 10 Academy Week 8–9 challenge to detect fraudulent online transactions using a combination of geolocation, behavioral, and temporal features. It involves full data preparation and modeling, with a focus on building a high-quality, reproducible ML pipeline.
+This project is developed as part of the **10 Academy Week 8–9 challenge**, focusing on detecting fraudulent online transactions using a combination of behavioral, geolocation, and time-based features. The solution follows a modular ML pipeline, with comprehensive EDA, class imbalance handling, and model evaluation.
 
---- 
+---
 
-## 🔄 Project Workflow: System Diagram
+##  Project Workflow: System Diagram
 
-The overall system follows a modular ML data pipeline, with each step in its own notebook:
-
-```
-
-```
-              ┌────────────────────────┐
-     │    Raw Data Sources    │
-     │ Fraud_Data, Creditcard │
-     └──────────┬─────────────┘
-                │
-                ▼
-     ┌──────────────────────────────┐
-     │ 01_missing_value_handling.ipynb │
-     └──────────┬─────────────────────┘
-                ▼
-     ┌────────────────────────────────────────┐
-     │ 02_cleaning_and_type_conversion.ipynb  │
-     └──────────┬─────────────────────────────┘
-                ▼
-     ┌──────────────────────┐     ┌──────────────────────┐
-     │ 03_eda_fraud.ipynb   │     │ 04_eda_creditcard.ipynb │
-     └──────────┬───────────┘     └────────────┬─────────┘
-                ▼                              ▼
-     ┌────────────────────────────┐
-     │ 05_geolocation_merge.ipynb │
-     └──────────┬─────────────────┘
-                ▼
-     ┌────────────────────────────┐
-     │ 06_feature_engineering.ipynb │
-     └──────────┬─────────────────┘
-                ▼
-     ┌────────────────────────────┐
-     │ 07_class_imbalance.ipynb   │
-     └──────────┬─────────────────┘
-                ▼
-     ┌────────────────────────────┐
-     │ 08_scaling_encoding.ipynb  │
-     └──────────┬─────────────────┘
-                ▼
-     ┌────────────────────────────────┐
-     │ Final Output: train_model_ready.csv │
-     └────────────────────────────────┘
+The system is organized step-by-step with clear dependencies between notebooks:
 
 ```
 
 ```
-##  Project Structure
+          ┌────────────────────────┐
+          │    Raw Data Sources    │
+          │ Fraud_Data, Creditcard │
+          └──────────┬─────────────┘
+                     │
+                     ▼
+   ┌────────────────────────────────────┐
+   │ 01_missing_value_handling.ipynb     │
+   └──────────┬─────────────────────────┘
+              ▼
+   ┌────────────────────────────────────────┐
+   │ 02_cleaning_and_type_conversion.ipynb  │
+   └──────────┬─────────────────────────────┘
+              ▼
+ ┌─────────────────────────────┐ ┌────────────────────────────┐
+ │ 03_eda_fraud.ipynb          │ │ 04_eda_creditcard.ipynb     │
+ └──────────┬──────────────────┘ └────────────┬────────────────┘
+            ▼                                 ▼
+   ┌────────────────────────────────────┐
+   │ 05_geolocation_merge.ipynb         │
+   └──────────┬─────────────────────────┘
+              ▼
+   ┌────────────────────────────────────┐
+   │ 06_feature_engineering.ipynb       │
+   └──────────┬─────────────────────────┘
+              ▼
+   ┌────────────────────────────────────┐
+   │ 07_class_imbalance.ipynb           │
+   └──────────┬─────────────────────────┘
+              ▼
+   ┌────────────────────────────────────┐
+   │ 08_scaling_encoding.ipynb          │
+   └──────────┬─────────────────────────┘
+              ▼
+   ┌────────────────────────────────────┐
+   │ 10_smote_creditcard.ipynb          │
+   └──────────┬─────────────────────────┘
+              ▼
+   ┌────────────────────────────────────┐
+   │ 09_model_training.ipynb            │
+   └────────────────────────────────────┘
+```
+
+```
+
+---
+
+## 📂 Project Structure
 
 ```
 
 fraud-detection-project/
-│
-├── .github/workflows/ci.yml              # GitHub Actions workflow for CI
+├── .github/workflows/ci.yml            # GitHub Actions for CI
 ├── data/
-│   ├── raw/                              # Raw input files (Fraud, Credit, IP)
-│   └── processed/                        # Cleaned, merged, balanced, encoded data
-├── notebooks/                            # Step-by-step Jupyter notebooks for Task 1
+│   ├── raw/                            # Raw input CSVs
+│   └── processed/                      # Cleaned, merged, SMOTE-applied data
+├── notebooks/                          # Jupyter Notebooks by task
 ├── reports/
-│   ├── figures/                          # Plots and visualizations
-│   └── interim\_1\_report.md              # Summary report for Task 1
-├── src/                                  # Core logic and reusable code
-├── tests/                                # Unit tests
-├── README.md                             # This file
-├── requirements.txt                      # Python dependencies
-├── environment.yml                       # Conda environment (optional)
-└── .gitignore                            # Ignored files
+│   ├── figures/
+│   │   ├── fraud\_fig/                  # EDA plots for fraud data
+│   │   ├── creditcard\_fig/            # Class distribution for credit data
+│   │   └── models\_fig/                # Model evaluation plots
+│   ├── interim\_1\_report.md
+│   └── interim\_2\_report.md
+├── src/                                # Utility and configuration scripts
+├── tests/                              # Unit tests for core components
+├── README.md
+├── requirements.txt
+├── environment.yml
+└── .gitignore
 
 ````
 
 ---
 
-##  Project Objective
+##  Project Objectives
 
-The goal is to identify potentially fraudulent purchases using:
-- User metadata (e.g., age, device, signup time)
-- Transaction behavior (amount, frequency)
-- Geolocation info derived from IP address
-- Time-based behavioral features (hour, day, time since signup)
-
----
-
-##  Tasks Completed (Task 1)
-
-### 1. **Data Analysis and Preprocessing**
-- Missing value imputation
-- Data type fixes and duplicate removal
-- Exploratory Data Analysis (EDA) for both fraud and creditcard datasets
-
-### 2. **Feature Engineering**
-- Time-based features: `hour_of_day`, `day_of_week`, `time_since_signup`
-- Frequency-based features: `user_tx_count`, `device_tx_count`, `ip_tx_count`
-
-### 3. **Geolocation Mapping**
-- Converted IP addresses to integers
-- Mapped to country using `IpAddress_to_Country.csv`
-
-### 4. **Class Imbalance Handling**
-- Applied **SMOTE** to balance fraud class
-
-### 5. **Encoding & Scaling**
-- One-hot encoding for categorical features
-- Standard scaling for numeric features
-- Saved as `train_model_ready.csv`
+- Build a fraud detection pipeline using two datasets: `Fraud_Data.csv` and `creditcard.csv`
+- Engineer features including geolocation and transaction frequency
+- Handle severe class imbalance using **SMOTE**
+- Build, evaluate, and compare **Logistic Regression** and **LightGBM**
+- Justify the best model using precision, recall, F1-score, and PR curves
 
 ---
 
-##  Testing
+## ✅ Task Highlights
 
-Unit tests are included in the `tests/` directory:
+### Task 1: Data Preparation & EDA
+- Handled missing values and duplicates
+- Cleaned data types and performed initial EDA
+- Engineered features: time of transaction, frequency per user/device/IP
+- Merged geolocation via IP-to-country mapping
+- Balanced data using **SMOTE** and **Random Undersampling**
+- Encoded and scaled data for modeling
 
+📁 Output:
+- `train_model_ready.csv`
+- Visuals in `reports/figures/fraud_fig/`
+
+---
+
+###  Task 2: Model Building & Evaluation
+
+#### Models Trained:
+- **Logistic Regression** (baseline)
+- **LightGBM** (ensemble model)
+
+#### Metrics Used:
+- **F1-Score**
+- **Precision/Recall**
+- **AUC-PR**
+- **Confusion Matrix**
+
+📁 Model Inputs:
+- `data/processed/train_model_ready.csv`
+- `data/processed/creditcard_balanced_smote.csv`
+
+📁 Evaluation Visuals:
+Saved in `reports/figures/models_fig/`  
+Includes PR Curves and Confusion Matrices for all models.
+
+---
+
+## 🧪 Testing
+
+Run all unit tests:
 ```bash
 pytest tests/
 ````
 
 ---
 
-## 📦 Setup Instructions
+## ⚙️ Setup Instructions
 
 ### 1. Clone the Repository
 
@@ -131,15 +153,15 @@ git clone https://github.com/emegua19/fraud-detection-project.git
 cd fraud-detection-project
 ```
 
-### 2. Create Environment
+### 2. Install Dependencies
 
-**Using pip:**
+With pip:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Or with conda:**
+Or with conda:
 
 ```bash
 conda env create -f environment.yml
@@ -148,32 +170,29 @@ conda activate fraud-detection
 
 ---
 
-##  Reports & Visualizations
+## 📁 Key Outputs Summary
 
-Visual EDA plots and correlation heatmaps are saved in:
+###  Data Files
 
-```
-reports/figures/
-```
+* `train_model_ready.csv`
+* `creditcard_balanced_smote.csv`
 
-Interim-1 summary report:
+###  Figures
 
-```
-reports/interim_1_report.md
-```
+* `fraud_fig/` – EDA plots
+* `creditcard_fig/` – Post-SMOTE distribution
+* `models_fig/` – Confusion matrices + PR curves
 
----
+### 📄 Reports
 
-##  Next Steps (Task 2 Preview)
-
-* Build baseline models (Logistic Regression, XGBoost)
-* Evaluate with AUC, F1-score, confusion matrix
-* Interpret model using SHAP values
-* Deploy selected model with FastAPI (optional)
+* `interim_1_report.md`
+* `interim_2_report.md`
 
 ---
 
 ##  Author
 
-**Yitbarek Geletaw** – Data Science Fellow @ 10 Academy
-💻 [GitHub](https://github.com/emegua19/fraud-detection-project)
+**Yitbarek Geletaw**
+Data Science Fellow @ 10 Academy
+🔗 [GitHub](https://github.com/emegua19/fraud-detection-project)
+
