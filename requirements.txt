@@ -6,4 +6,4 @@ shap
 matplotlib
 seaborn
 sparse
-pytest
+lightgbm
